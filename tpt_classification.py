@@ -59,7 +59,7 @@ def test_time_tuning(model, inputs, optimizer, scaler, args):
     
     selected_idx = None
     for j in range(args.tta_steps):
-        with torch.cuda.amp.autocast():
+        with torch.amp.autocast('cuda'):
             if args.cocoop:
                 output = model((image_feature, pgen_ctx))
             else:
@@ -98,11 +98,14 @@ def main_worker(gpu, args):
     set_random_seed(args.seed)
     print("Use GPU: {} for training".format(args.gpu))
 
-    # create model (zero-shot clip model (ViT-L/14@px336) with promptruning)
-    if args.test_sets in fewshot_datasets:
-        classnames = eval("{}_classes".format(args.test_sets.lower()))
-    else:
-        classnames = imagenet_classes
+    # create model (zero-shot clip model (ViT-L/14@px336) with prompt-truning)
+    # if args.test_sets in fewshot_datasets:
+    #     classnames = eval("{}_classes".format(args.test_sets.lower()))
+    # else:
+    #     classnames = imagenet_classes
+        
+        
+
     if args.cocoop:
         model = get_cocoop(args.arch, args.test_sets, 'cpu', args.n_ctx)
         assert args.load is not None
@@ -185,7 +188,9 @@ def main_worker(gpu, args):
         # Reset classnames of custom CLIP model
         if len(set_id) > 1: 
             # fine-grained classification datasets
+            # ？？
             classnames = eval("{}_classes".format(set_id.lower()))
+            print(classnames)
         else:
             assert set_id in ['A', 'R', 'K', 'V', 'I']
             classnames_all = imagenet_classes
@@ -207,20 +212,35 @@ def main_worker(gpu, args):
             model = model.cuda(args.gpu)
         else:
             model.reset_classnames(classnames, args.arch)
-
+        #  唯一一次使用build_dataset
         val_dataset = build_dataset(set_id, data_transform, args.data, mode=args.dataset_mode)
-        print("number of test samples: {}".format(len(val_dataset)))
-        val_loader = torch.utils.data.DataLoader(
-                    val_dataset,
-                    batch_size=batchsize, shuffle=True,
-                    num_workers=args.workers, pin_memory=True)
-            
-        results[set_id] = test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args)
-        del val_dataset, val_loader
-        try:
-            print("=> Acc. on testset [{}]: @1 {}/ @5 {}".format(set_id, results[set_id][0], results[set_id][1]))
-        except:
-            print("=> Acc. on testset [{}]: {}".format(set_id, results[set_id]))
+        if set_id in ['FMoW', 'rmnist', 'yearbook']:
+            for env, dataset_item in enumerate(val_dataset):
+                print("number of test samples: {}".format(len(dataset_item)))
+                val_loader = torch.utils.data.DataLoader(
+                            dataset_item,
+                            batch_size=batchsize, shuffle=True,
+                            num_workers=args.workers, pin_memory=True)
+                    
+                results[set_id] = test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args)
+                # del val_dataset, val_loader
+                try:
+                    print("=> Acc. on testset [{}-{}]: @1 {}/ @5 {}".format(set_id, env, results[set_id][0], results[set_id][1]))
+                except:
+                    print("=> Acc. on testset [{}-{}]: {}".format(set_id, env, results[set_id]))
+        else:
+            print("number of test samples: {}".format(len(val_dataset)))
+            val_loader = torch.utils.data.DataLoader(
+                        val_dataset,
+                        batch_size=batchsize, shuffle=True,
+                        num_workers=args.workers, pin_memory=True)
+                
+            results[set_id] = test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args)
+            # del val_dataset, val_loader
+            try:
+                print("=> Acc. on testset [{}]: @1 {}/ @5 {}".format(set_id, results[set_id][0], results[set_id][1]))
+            except:
+                print("=> Acc. on testset [{}]: {}".format(set_id, results[set_id]))
 
     print("======== Result Summary ========")
     print("params: nstep	lr	bs")
@@ -287,7 +307,7 @@ def test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state,
                 image_feature = image_feature[0].unsqueeze(0)
         
         with torch.no_grad():
-            with torch.cuda.amp.autocast():
+            with torch.amp.autocast('cuda'):
                 if args.cocoop:
                     output = model((image_feature, pgen_ctx))
                 else:
@@ -302,8 +322,8 @@ def test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state,
         batch_time.update(time.time() - end)
         end = time.time()
 
-        if (i+1) % args.print_freq == 0:
-            progress.display(i)
+        # if (i+1) % args.print_freq == 0:
+        #     progress.display(i)
 
     progress.display_summary()
 

@@ -10,6 +10,7 @@ import PIL
 from PIL import Image
 
 
+
 class BaseJsonDataset(Dataset):
     def __init__(self, image_path, json_path, mode='train', n_shot=None, transform=None):
         self.transform = transform
@@ -48,13 +49,14 @@ class BaseJsonDataset(Dataset):
         return image, torch.tensor(label).long()
 
 fewshot_datasets = ['DTD', 'Flower102', 'Food101', 'Cars', 'SUN397', 
-                    'Aircraft', 'Pets', 'Caltech101', 'UCF101', 'eurosat']
+                    'Aircraft', 'Pets', 'Caltech101', 'UCF101', 'eurosat', 'FMoW']
 
 path_dict = {
     # dataset_name: ["image_dir", "json_split_file"]
     "flower102": ["jpg", "data/data_splits/split_zhou_OxfordFlowers.json"],
     "food101": ["images", "data/data_splits/split_zhou_Food101.json"],
-    "dtd": ["images", "data/data_splits/split_zhou_DescribableTextures.json"],
+    # "dtd": ["images", "data/data_splits/split_zhou_DescribableTextures.json"],
+    "dtd": ["images", "/data/xjl/dataset/dtd/split_zhou_DescribableTextures.json"],
     "pets": ["", "data/data_splits/split_zhou_OxfordPets.json"],
     "sun397": ["", "data/data_splits/split_zhou_SUN397.json"],
     "caltech101": ["", "data/data_splits/split_zhou_Caltech101.json"],

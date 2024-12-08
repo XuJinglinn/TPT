@@ -8,6 +8,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
 from data.hoi_dataset import BongardDataset
+from data.fmow_dataset import FMoWDataset
 try:
     from torchvision.transforms import InterpolationMode
     BICUBIC = InterpolationMode.BICUBIC
@@ -18,13 +19,13 @@ from data.fewshot_datasets import *
 import data.augmix_ops as augmentations
 
 ID_to_DIRNAME={
-    'I': 'ImageNet',
-    'A': 'imagenet-a',
+    'I': 'imagenet/images',
+    'A': 'imagenet-adversarial',
     'K': 'ImageNet-Sketch',
     'R': 'imagenet-r',
     'V': 'imagenetv2-matched-frequency-format-val',
     'flower102': 'Flower102',
-    'dtd': 'DTD',
+    'dtd': 'dtd',
     'pets': 'OxfordPets',
     'cars': 'StanfordCars',
     'ucf101': 'UCF101',
@@ -32,7 +33,8 @@ ID_to_DIRNAME={
     'food101': 'Food101',
     'sun397': 'SUN397',
     'aircraft': 'fgvc_aircraft',
-    'eurosat': 'eurosat'
+    'eurosat': 'eurosat',
+    # 'fmow': '',
 }
 
 def build_dataset(set_id, transform, data_root, mode='test', n_shot=None, split="all", bongard_anno=False):
@@ -43,6 +45,18 @@ def build_dataset(set_id, transform, data_root, mode='test', n_shot=None, split=
     elif set_id in ['A', 'K', 'R', 'V']:
         testdir = os.path.join(data_root, ID_to_DIRNAME[set_id])
         testset = datasets.ImageFolder(testdir, transform=transform)
+    elif set_id == 'FMoW':
+        # "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"
+        testset = []
+        for year in range(0, 16):
+            testset_item = FMoWDataset(env=year, mode=2, data_dir=data_root, transform=transform)
+            testset.append(testset_item)
+    elif set_id == 'rmnist':
+        testset = []
+        for rotation_angle in range(0,90,10):
+            testset_item = datasets.ImageFolder(root=data_root + '/rmnist/' + str(rotation_angle) + '/2', transform=transform)
+            testset.append(testset_item)
+            
     elif set_id in fewshot_datasets:
         if mode == 'train' and n_shot:
             testset = build_fewshot_dataset(set_id, os.path.join(data_root, ID_to_DIRNAME[set_id.lower()]), transform, mode=mode, n_shot=n_shot)
@@ -52,6 +66,8 @@ def build_dataset(set_id, transform, data_root, mode='test', n_shot=None, split=
         assert isinstance(transform, Tuple)
         base_transform, query_transform = transform
         testset = BongardDataset(data_root, split, mode, base_transform, query_transform, bongard_anno)
+    
+        
     else:
         raise NotImplementedError
         
