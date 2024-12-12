@@ -214,20 +214,33 @@ def main_worker(gpu, args):
             model.reset_classnames(classnames, args.arch)
         #  唯一一次使用build_dataset
         val_dataset = build_dataset(set_id, data_transform, args.data, mode=args.dataset_mode)
-        if set_id in ['FMoW', 'rmnist', 'yearbook']:
-            for env, dataset_item in enumerate(val_dataset):
-                print("number of test samples: {}".format(len(dataset_item)))
+        if set_id in ['FMoW', 'rmnist', 'yearbook', 'low_light_cifar10']:
+            for env, dataset_item in val_dataset.items():
                 val_loader = torch.utils.data.DataLoader(
                             dataset_item,
                             batch_size=batchsize, shuffle=True,
                             num_workers=args.workers, pin_memory=True)
-                    
-                results[set_id] = test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args)
+                cal_top5 = len(classnames) >= 5
+                results[set_id] = test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args,  cal_top5)
                 # del val_dataset, val_loader
                 try:
                     print("=> Acc. on testset [{}-{}]: @1 {}/ @5 {}".format(set_id, env, results[set_id][0], results[set_id][1]))
                 except:
-                    print("=> Acc. on testset [{}-{}]: {}".format(set_id, env, results[set_id]))
+                    print("=> Acc. on testset [{}-{}]: {}".format(set_id, env, results[set_id][0].item()))
+        
+            # for env, dataset_item in enumerate(val_dataset):
+            #     print("number of test samples: {}".format(len(dataset_item)))
+            #     val_loader = torch.utils.data.DataLoader(
+            #                 dataset_item,
+            #                 batch_size=batchsize, shuffle=True,
+            #                 num_workers=args.workers, pin_memory=True)
+            #     cal_top5 = len(classnames) >= 5
+            #     results[set_id] = test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args,  cal_top5)
+            #     # del val_dataset, val_loader
+            #     try:
+            #         print("=> Acc. on testset [{}-{}]: @1 {}/ @5 {}".format(set_id, env, results[set_id][0], results[set_id][1]))
+            #     except:
+            #         print("=> Acc. on testset [{}-{}]: {}".format(set_id, env, results[set_id][0].item()))
         else:
             print("number of test samples: {}".format(len(val_dataset)))
             val_loader = torch.utils.data.DataLoader(
@@ -254,15 +267,22 @@ def main_worker(gpu, args):
     print("\n")
 
 
-def test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args):
+def test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state, scaler, args, cal_top5):
     batch_time = AverageMeter('Time', ':6.3f', Summary.NONE)
     top1 = AverageMeter('Acc@1', ':6.2f', Summary.AVERAGE)
-    top5 = AverageMeter('Acc@5', ':6.2f', Summary.AVERAGE)
+    if cal_top5:
+        top5 = AverageMeter('Acc@5', ':6.2f', Summary.AVERAGE)
 
-    progress = ProgressMeter(
-        len(val_loader),
-        [batch_time, top1, top5],
-        prefix='Test: ')
+    if cal_top5:
+        progress = ProgressMeter(
+            len(val_loader),
+            [batch_time, top1, top5],
+            prefix='Test: ')
+    else:
+        progress = ProgressMeter(
+            len(val_loader),
+            [batch_time, top1],
+            prefix='Test: ')
 
     # reset model and switch to evaluate mode
     model.eval()
@@ -313,10 +333,15 @@ def test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state,
                 else:
                     output = model(image)
         # measure accuracy and record loss
-        acc1, acc5 = accuracy(output, target, topk=(1, 5))
+        if cal_top5:
+            acc1, acc5 = accuracy(output, target, topk=(1, 5))
+        else:
+            acc1 = accuracy(output, target)
+            
                 
         top1.update(acc1[0], image.size(0))
-        top5.update(acc5[0], image.size(0))
+        if cal_top5:
+            top5.update(acc5[0], image.size(0))
 
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -325,9 +350,13 @@ def test_time_adapt_eval(val_loader, model, model_state, optimizer, optim_state,
         # if (i+1) % args.print_freq == 0:
         #     progress.display(i)
 
-    progress.display_summary()
+    # progress.display_summary()
+    if cal_top5:
 
-    return [top1.avg, top5.avg]
+        return [top1.avg, top5.avg]
+    else :
+        return [top1.avg]
+        
 
 
 if __name__ == '__main__':

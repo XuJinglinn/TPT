@@ -9,6 +9,7 @@ import torchvision.datasets as datasets
 
 from data.hoi_dataset import BongardDataset
 from data.fmow_dataset import FMoWDataset
+from data.low_light_cifar10 import CustomCIFAR10Dataset
 try:
     from torchvision.transforms import InterpolationMode
     BICUBIC = InterpolationMode.BICUBIC
@@ -47,15 +48,33 @@ def build_dataset(set_id, transform, data_root, mode='test', n_shot=None, split=
         testset = datasets.ImageFolder(testdir, transform=transform)
     elif set_id == 'FMoW':
         # "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"
-        testset = []
+        testset = {}
         for year in range(0, 16):
             testset_item = FMoWDataset(env=year, mode=2, data_dir=data_root, transform=transform)
-            testset.append(testset_item)
+            # testset.append(testset_item)
+            testset[year] = testset_item
+            
     elif set_id == 'rmnist':
         testset = []
         for rotation_angle in range(0,90,10):
             testset_item = datasets.ImageFolder(root=data_root + '/rmnist/' + str(rotation_angle) + '/2', transform=transform)
-            testset.append(testset_item)
+            # testset.append(testset_item)
+            testset[rotation_angle] = testset_item
+            
+    elif set_id == 'yearbook':
+        testset = {}
+        for year in range(1930, 2013, 4):
+            testset_item = datasets.ImageFolder(root=data_root + '/yearbook/yearbook-merge/' + str(year) + '/2', transform=transform)
+            # testset.append(testset_item)
+            testset[year] = testset_item
+            
+
+    elif set_id == 'low_light_cifar10':
+        testset = {}
+        for degree in [0.01, 0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]:
+            testset_item = CustomCIFAR10Dataset(batch_file=data_root + '/Low_Light_CIFAR_10/test_batch_lowlight_' + str(degree), transform=transform)
+            # testset.append(testset_item)
+            testset[degree] = testset_item
             
     elif set_id in fewshot_datasets:
         if mode == 'train' and n_shot:

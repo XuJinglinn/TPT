@@ -88,8 +88,9 @@ fmow_classes = [
             "aerial view of a wind farm",
             "aerial view of a zoo"
         ]
-import torchvision.datasets as datasets
 
 rmnist_classes = ['number:"0"', 'number:"1"', 'number:"2"', 'number:"3"', 'number:"4"', 'number:"5"', 'number:"6"', 'number:"7"', 'number:"8"', 'number:"9"']
 
-# yearbook_classes = ['male student' if x == '0' else 'female student' for x in dataset.classes]
+yearbook_classes = ['male student', 'female student']
+
+low_light_cifar10_classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
