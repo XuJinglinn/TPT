@@ -1,0 +1,38 @@
+number of test samples: 7778
+./tpt_classification.py:62: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast():
+./tpt_classification.py:310: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast():
+ *  Acc@1 37.722 Acc@5 89.226
+=> Acc. on testset [rmnist-0]: @1 37.721778869628906/ @5 89.22602081298828
+number of test samples: 7778
+ *  Acc@1 33.980 Acc@5 89.727
+=> Acc. on testset [rmnist-1]: @1 33.9804573059082/ @5 89.7274398803711
+number of test samples: 7778
+ *  Acc@1 27.578 Acc@5 86.655
+=> Acc. on testset [rmnist-2]: @1 27.577783584594727/ @5 86.65467071533203
+number of test samples: 7778
+ *  Acc@1 23.194 Acc@5 81.769
+=> Acc. on testset [rmnist-3]: @1 23.193622589111328/ @5 81.76909637451172
+number of test samples: 7778
+ *  Acc@1 18.552 Acc@5 73.849
+=> Acc. on testset [rmnist-4]: @1 18.55232810974121/ @5 73.84931945800781
+number of test samples: 7778
+ *  Acc@1 16.714 Acc@5 68.334
+=> Acc. on testset [rmnist-5]: @1 16.713808059692383/ @5 68.3337631225586
+number of test samples: 7778
+ *  Acc@1 15.634 Acc@5 63.088
+=> Acc. on testset [rmnist-6]: @1 15.63383960723877/ @5 63.088199615478516
+number of test samples: 7777
+ *  Acc@1 15.739 Acc@5 59.264
+=> Acc. on testset [rmnist-7]: @1 15.738717079162598/ @5 59.26449966430664
+number of test samples: 7777
+ *  Acc@1 15.147 Acc@5 57.001
+=> Acc. on testset [rmnist-8]: @1 15.147229194641113/ @5 57.00141525268555
+======== Result Summary ========
+params: nstep   lr      bs
+params: 1       0.005   64
+                 [set_id]                Top-1 acc.              Top-5 acc.
+rmnist
+
+15.15

@@ -1,0 +1,54 @@
+*  Acc@1 6.306 Acc@5 23.121
+=> Acc. on testset [FMoW-0]: @1 6.305832862854004/ @5 23.121387481689453
+number of test samples: 2555
+ *  Acc@1 7.280 Acc@5 26.810
+=> Acc. on testset [FMoW-1]: @1 7.279843807220459/ @5 26.810176849365234
+number of test samples: 1995
+ *  Acc@1 8.271 Acc@5 26.667
+=> Acc. on testset [FMoW-2]: @1 8.270676612854004/ @5 26.66666603088379
+number of test samples: 2836
+ *  Acc@1 6.594 Acc@5 25.811
+=> Acc. on testset [FMoW-3]: @1 6.593794345855713/ @5 25.811002731323242
+number of test samples: 3561
+ *  Acc@1 8.677 Acc@5 30.020
+=> Acc. on testset [FMoW-4]: @1 8.677338600158691/ @5 30.0196590423584
+number of test samples: 1687
+ *  Acc@1 8.595 Acc@5 28.690
+=> Acc. on testset [FMoW-5]: @1 8.595139503479004/ @5 28.689983367919922
+number of test samples: 2559
+ *  Acc@1 6.917 Acc@5 25.479
+=> Acc. on testset [FMoW-6]: @1 6.916764736175537/ @5 25.478702545166016
+number of test samples: 8374
+ *  Acc@1 9.207 Acc@5 30.583
+=> Acc. on testset [FMoW-7]: @1 9.207069396972656/ @5 30.58275604248047
+number of test samples: 21413
+ *  Acc@1 13.436 Acc@5 36.865
+=> Acc. on testset [FMoW-8]: @1 13.435763359069824/ @5 36.865455627441406
+number of test samples: 24948
+ *  Acc@1 14.506 Acc@5 38.167
+=> Acc. on testset [FMoW-9]: @1 14.506173133850098/ @5 38.167388916015625
+number of test samples: 27842
+ *  Acc@1 11.547 Acc@5 35.005
+=> Acc. on testset [FMoW-10]: @1 11.547303199768066/ @5 35.004669189453125
+number of test samples: 3850
+ *  Acc@1 13.143 Acc@5 37.091
+=> Acc. on testset [FMoW-11]: @1 13.14285659790039/ @5 37.09090805053711
+number of test samples: 6192
+ *  Acc@1 14.325 Acc@5 39.745
+=> Acc. on testset [FMoW-12]: @1 14.324935913085938/ @5 39.744834899902344
+number of test samples: 9873
+ *  Acc@1 13.674 Acc@5 37.476
+=> Acc. on testset [FMoW-13]: @1 13.67365550994873/ @5 37.47594451904297
+number of test samples: 15959
+ *  Acc@1 14.681 Acc@5 40.134
+=> Acc. on testset [FMoW-14]: @1 14.681371688842773/ @5 40.13409423828125
+number of test samples: 6149
+ *  Acc@1 14.084 Acc@5 38.901
+=> Acc. on testset [FMoW-15]: @1 14.08359146118164/ @5 38.900634765625
+======== Result Summary ========
+params: nstep   lr      bs
+params: 1       0.005   64
+                 [set_id]                Top-1 acc.              Top-5 acc.
+FMoW
+
+14.08
